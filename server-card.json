@@ -1,1 +1,166 @@
-{"description":"Calculate Asia Miles for Cathay Pacific award flights, including mixed-cabin itineraries.","name":"asia-miles-calculator","serverInfo":{"name":"asia-miles-calculator-mcp","version":"1.0.0"},"tools":[{"description":"Calculate Asia Miles needed for an award itinerary (one or two segments), returning Economy, Business and Mixed-Cabin mileage plans, distances and route validation.","inputSchema":{"properties":{"segment1":{"properties":{"arrival":{"type":"string"},"cabinClass":{"type":"string"},"departure":{"type":"string"}},"required":["departure","arrival"],"type":"object"},"segment2":{"properties":{"arrival":{"type":"string"},"cabinClass":{"type":"string"},"departure":{"type":"string"}},"required":["departure","arrival"],"type":"object"}},"required":["segment1"],"type":"object"},"name":"calculate_asia_miles"},{"description":"Search airports by name, city or IATA code.","inputSchema":{"properties":{"limit":{"type":"number"},"query":{"type":"string"}},"required":["query"],"type":"object"},"name":"search_airports"},{"description":"Look up direct (non-stop) routes from an airport, with operating airlines and seasonality.","inputSchema":{"properties":{"from":{"type":"string"},"limit":{"type":"number"},"to":{"type":"string"}},"required":["from"],"type":"object"},"name":"get_direct_routes"}],"url":"https://asiamiles-calculator.site/api/mcp"}
+{
+  "name": "asia-miles-calculator",
+  "title": "Asia Miles Calculator",
+  "version": "1.0.1",
+  "description": "Calculate Asia Miles for Cathay Pacific award flights, including mixed-cabin itineraries.",
+  "url": "https://asiamiles-calculator.site/api/mcp",
+  "websiteUrl": "https://asiamiles-calculator.site/mcp",
+  "repository": {
+    "url": "https://github.com/yshkk/asia-miles-calculator-mcp",
+    "source": "github"
+  },
+  "icons": [
+    {
+      "src": "https://asiamiles-calculator.site/logo.png",
+      "mimeType": "image/png",
+      "sizes": [
+        "96x96"
+      ]
+    }
+  ],
+  "serverInfo": {
+    "name": "asia-miles-calculator-mcp",
+    "version": "1.0.1"
+  },
+  "transport": {
+    "type": "streamable-http",
+    "url": "https://asiamiles-calculator.site/api/mcp",
+    "endpoint": "https://asiamiles-calculator.site/api/mcp"
+  },
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://asiamiles-calculator.site/api/mcp"
+    }
+  ],
+  "authentication": {
+    "required": false,
+    "schemes": []
+  },
+  "capabilities": {
+    "tools": {}
+  },
+  "tools": [
+    {
+      "name": "calculate_asia_miles",
+      "title": "Calculate Asia Miles & Mixed Cabin Redemption",
+      "description": "Calculate Asia Miles redemption plans for 1-segment direct or 2-segment connecting itineraries. Automatically returns Full Economy, Full Business, and proportional Mixed-Cabin (Business + Economy / Economy + Business) mileage options, savings vs Full Business, route validation, and direct vs via-HKG comparisons.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "segment1": {
+            "type": "object",
+            "properties": {
+              "departure": {
+                "type": "string",
+                "minLength": 3,
+                "maxLength": 3,
+                "description": "3-letter IATA origin code, e.g. HKG"
+              },
+              "arrival": {
+                "type": "string",
+                "minLength": 3,
+                "maxLength": 3,
+                "description": "3-letter IATA destination code, e.g. NRT"
+              },
+              "cabinClass": {
+                "type": "string",
+                "enum": ["economy", "premium", "business", "first"],
+                "default": "business",
+                "description": "Optional cabin class for segment 1 (defaults to business; all cabin plans are returned)"
+              }
+            },
+            "required": ["departure", "arrival"]
+          },
+          "segment2": {
+            "type": "object",
+            "properties": {
+              "departure": {
+                "type": "string",
+                "minLength": 3,
+                "maxLength": 3,
+                "description": "3-letter IATA origin code for segment 2"
+              },
+              "arrival": {
+                "type": "string",
+                "minLength": 3,
+                "maxLength": 3,
+                "description": "3-letter IATA destination code for segment 2"
+              },
+              "cabinClass": {
+                "type": "string",
+                "enum": ["economy", "premium", "business", "first"],
+                "default": "business",
+                "description": "Optional cabin class for segment 2 (defaults to business; all cabin plans are returned)"
+              }
+            },
+            "required": ["departure", "arrival"]
+          }
+        },
+        "required": ["segment1"]
+      },
+      "annotations": {
+        "readOnlyHint": true
+      }
+    },
+    {
+      "name": "search_airports",
+      "title": "Search Airports & IATA Codes",
+      "description": "Search airports by IATA code, city name (English or Chinese), or airport name.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "minLength": 1,
+            "description": "City name, airport name, or IATA code"
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 25,
+            "default": 10
+          }
+        },
+        "required": ["query"]
+      },
+      "annotations": {
+        "readOnlyHint": true
+      }
+    },
+    {
+      "name": "get_direct_routes",
+      "title": "Get Direct Airline Routes",
+      "description": "List airlines operating direct flights from an origin airport (optionally filtered to a destination airport) with seasonality.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "from": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 3,
+            "description": "Origin 3-letter IATA code"
+          },
+          "to": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 3,
+            "description": "Optional destination 3-letter IATA code"
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 50,
+            "default": 30
+          }
+        },
+        "required": ["from"]
+      },
+      "annotations": {
+        "readOnlyHint": true
+      }
+    }
+  ],
+  "resources": [],
+  "prompts": []
+}
